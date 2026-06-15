@@ -4,18 +4,19 @@ library(tidyverse)
 library(lme4)
 library(emmeans)
 library(car)
+library(patchwork)
 
 #load in the metadata
-dna_metadata<- read.csv("F:\\Research\\16S_Soil\\formatted_metadata.csv")
+dna_metadata<- read.csv("formatted_metadata.csv")
   
 #load in the dna amounts data
-dna_amount<- read.csv("F:\\Research\\16S_Soil\\DNA_amounts.csv")
+dna_amount<- read.csv("DNA_amounts_BigData.csv")
 #need to make sample id a character
 dna_amount$SampleID<- as.character(dna_amount$SampleID)
 str(dna_amount)
 
 #load in waypoints
-waypoints<- read.csv("F:\\Research\\waypoints.csv")
+waypoints<- read.csv("waypoints.csv")
 
 #format latrine names
 waypoints$latrineF<-gsub("^.{0,4}", "", waypoints$latrine)
@@ -121,10 +122,58 @@ qqnorm(residuals(m_season)) #checking normality
 
 
 #plot DNA by season
-ggplot(dna_rgm, aes(treatment.x, DNA_ug_per_g)) +
+ggplot(dna_rgmD, aes(treatment.x, DNA_ug_per_g)) +
   geom_boxplot(alpha = 0.5, aes(fill=treatment.x), outliers=F) +
   geom_jitter(aes(color=treatment.x))+
   labs(x = NULL, y = "DNA ug/g", title = "DNA Amounts for RGM Dry") +
   scale_fill_manual(values=c('cyan3','purple3'))+
   scale_color_manual(values=c('cyan', 'purple1'))+
   theme_bw() 
+
+
+
+#manuscript plot 
+
+dna_rgm_wet <- ggplot(dna_wet, aes(treatment.x, DNA_ug_per_g)) +
+  geom_boxplot(alpha = 0.5, aes(fill=treatment.x), outliers=F) +
+  geom_jitter(aes(color=treatment.x))+
+  labs(x = NULL,  y = expression(DNA~(mu*g /g)), title = "(a)") +
+  scale_fill_manual(values=c('cyan3','purple3'), guide = 'none')+
+  scale_color_manual(values=c('cyan', 'purple1'), guide = 'none')+
+  scale_x_discrete(labels = c(
+    control = "Reference",
+    latrine = "Latrine" )) + 
+  theme_bw() +
+  facet_wrap(~soilAge) +
+  theme(
+    plot.title = element_text(size = 16, hjust = 0.5),
+    axis.title.y = element_text(face="bold", size = 18), 
+    axis.text.y = element_text(size = 16),
+    axis.title.x = element_text(size = 18, face = "bold",color = "black"),
+    axis.text.x=element_text(size=16),
+    plot.margin = unit(c(0.1,0.1,0,0.1),"cm"))
+dna_rgm_wet
+
+dna_rgm_dry <- ggplot(dna_rgmD, aes(treatment.x, DNA_ug_per_g)) +
+  geom_boxplot(alpha = 0.5, aes(fill=treatment.x), outliers=F) +
+  geom_jitter(aes(color=treatment.x))+
+  labs(x = NULL, y = expression(DNA~(mu*g /g)), title = "(b)") +
+  scale_fill_manual(values=c('cyan3','purple3'), guide = "none")+
+  scale_color_manual(values=c('cyan', 'purple1'), guide = "none")+
+  scale_x_discrete(labels = c(
+    control = "Reference",
+    latrine = "Latrine" )) + 
+  theme_bw()  +
+  theme(
+    plot.title = element_text(size = 16, hjust = 0.5),
+    axis.title.y = element_text(face="bold", size = 18), 
+    axis.text.y = element_text(size = 16),
+    axis.title.x = element_text(size = 18, face = "bold",color = "black"),
+    axis.text.x=element_text(size=16),
+    plot.margin = unit(c(0.1,0.1,0,0.1),"cm"))
+dna_rgm_dry
+
+(dna_rgm_wet + dna_rgm_dry) +
+  plot_layout(widths = c(1, 1)) &
+  theme(plot.margin = margin(5, 20, 5, 5))
+

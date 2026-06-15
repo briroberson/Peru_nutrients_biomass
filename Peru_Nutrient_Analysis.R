@@ -4,7 +4,7 @@ library(tidyverse)
 library(doBy)
 
 #load in nutrient data
-nutrient<- read.csv("F:\\Research\\Peru_Nutrient.csv")
+nutrient<- read.csv("Peru_Nutrient.csv")
 
 
 ########## LIA----
