@@ -6,14 +6,15 @@ library(emmeans)
 library(car)
 library(patchwork)
 
-theme<-theme(
-  plot.title = element_text(size = 16, hjust = 0.5),
-  axis.title.y = element_text(face="bold", size = 18), 
-  axis.text.y = element_text(size = 10),
-  axis.title.x = element_text(size = 18, face = "bold",color = "black"),
-  axis.text.x=element_text(size=10),
-  legend.position = "none", 
-  plot.margin = unit(c(0.1,0.1,0,0.1),"cm"))
+theme<-theme(plot.title = element_text(size = 16, hjust = 0.5),
+             axis.title.y = element_text(face="bold", size = 18), 
+             axis.text.x = element_text(size = 16),
+             axis.text.y = element_text(size = 16),
+             axis.title.x = element_text(size = 18, face = "bold",color = "black"),
+             plot.margin = unit(c(0.1,0.1,0,0.1),"cm") ,
+             strip.text = element_text(face = "bold", size = 16), 
+             legend.position = "none")
+
 
 #load in the metadata
 dna_metadata<- read.csv("formatted_metadata.csv")
@@ -162,59 +163,60 @@ DNA_sig_table <- data.frame(
   }))
 
 DNA_sig_table$stars <- p_to_star(DNA_sig_table$p.value)
-DNA_sig_table$soilAge <- gsub(".*_(RGM|LIA)", "\\1", DNA_sig_table$variable)
-DNA_sig_table$soilAge <- tolower(DNA_sig_table$soilAge)
+
+DNA_sig_table$panel <- dplyr::case_when(
+  DNA_sig_table$variable == "wet_LIA" ~ "lia",
+  DNA_sig_table$variable == "wet_RGM" ~ "rgm",
+  DNA_sig_table$variable == "dry_RGM" ~ "dry_RGM")
+
+DNA_sig_table$panel <- factor(
+  DNA_sig_table$panel,
+  levels = c("lia", "rgm", "dry_RGM"))
 
 
-#manuscript plot 
 
-dna_rgm_wet <- ggplot(dna_wet, aes(treatment.x, DNA_ug_per_g)) +
-  geom_boxplot(aes(fill=treatment.x), outliers=F) +
-  geom_point(aes(color=treatment.x, alpha = 0.5))+
-  labs(x = NULL,  y = expression(DNA~(mu*g /g)), title = "(f)") +
-  scale_fill_manual(values=c('cyan3','#9C6EB0'), guide = 'none')+
-  scale_color_manual(values=c('black','black'))+ 
+
+
+#new combined manuscript plot 
+
+dna_all <- bind_rows(
+  dna_wet %>% 
+    mutate(panel = soilAge),  
+  dna_rgmD %>% 
+    mutate(panel = "dry_RGM")) 
+
+dna_all$panel <- factor(
+  dna_all$panel,
+  levels = c("lia", "rgm", "dry_RGM"))
+
+dna_plot <- ggplot(dna_all, aes(treatment.x, DNA_ug_per_g)) +
+  geom_boxplot(aes(fill = treatment.x), outliers = FALSE) +
+  geom_point(aes(color = treatment.x), alpha = 0.5) +
+  labs(x = NULL, y = "DNA (µg/g)", tag = "(f)") +
+  scale_fill_manual(
+    values = c("cyan3", "#9C6EB0"),
+    guide = "none") +
+  scale_color_manual(
+    values = c("black", "black")) +
   scale_x_discrete(labels = c(
     control = "Reference",
-    latrine = "Latrine" )) + 
-  theme_bw() +
-  facet_wrap(~soilAge, labeller = labeller(soilAge = c(
-    "rgm" = "RGM", "lia" = "LIA"))) +
-  geom_text(
-    data = DNA_sig_table,
-    aes(x = 1.5, y = Inf, label = stars),
-    inherit.aes = FALSE,
-    vjust = 1.2,
-    size = 6) + 
-  theme
-dna_rgm_wet
+    latrine = "Latrine")) +
+  facet_wrap( ~panel, nrow = 1,
+              labeller = labeller(panel = c(
+                lia = " Wet season LIA",
+                rgm = "Wet season RGM",
+                dry_RGM = "Dry season RGM"))) +
+  geom_text(data = DNA_sig_table,
+            aes(x = 1.5, y = Inf, label = stars),
+            inherit.aes = FALSE,
+            vjust = 1.2,
+            size = 6) + 
+  theme_bw() + theme +
+  theme(
+    plot.tag = element_text(face = "bold", size = 18),
+    plot.tag.position = c(0.02, 0.98)) 
 
-dna_rgm_dry <- ggplot(dna_rgmD, aes(treatment.x, DNA_ug_per_g)) +
-  geom_boxplot(aes(fill=treatment.x), outliers=F) +
-  geom_point(aes(color=treatment.x, alpha = 0.5))+
-  labs(x = NULL, y = expression(DNA~(mu*g /g)), title = "(g)") +
-  scale_fill_manual(values=c('cyan3','#9C6EB0'), guide = 'none')+
-  scale_color_manual(values=c('black','black'))+ 
-  scale_x_discrete(labels = c(
-    control = "Reference",
-    latrine = "Latrine" )) + 
-  theme_bw() + 
-  geom_text(
-    data = subset(DNA_sig_table, variable == "dry_RGM"),
-    aes(x = 1.5, y = Inf, label = stars),
-    inherit.aes = FALSE,
-    vjust = 1.2,
-    size = 6) + 
-  theme
-dna_rgm_dry
-
-
-(dna_rgm_wet + dna_rgm_dry) +
-  plot_layout(widths = c(1, 1)) &
-  theme(plot.margin = margin(5, 20, 5, 5))
-
-dna_plots <- dna_rgm_wet / dna_rgm_dry
-
+dna_plot
 #combined with nutrient plots
 design <- c(
   area(t = 1, l = 1, b = 1, r = 1),  # both_c
@@ -227,10 +229,30 @@ design <- c(
 
 final_plot <-
   both_c +
-  both_cn +
   both_N +
   both_d13C +
   both_d15N +
-  dna_plots +
+  both_cn +
+  dna_plot +
   plot_layout(design = design)
-final_plot
+
+dna_and_nuts <- final_plot +
+  plot_layout(
+    design = design,
+    widths = c(1, 1, 2))
+dna_and_nuts
+#export 2000 x 1000
+
+
+#run DEC dna analysis for the rest
+
+
+
+
+
+
+
+
+
+
+

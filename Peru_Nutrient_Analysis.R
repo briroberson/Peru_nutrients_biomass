@@ -4,17 +4,19 @@ library(tidyverse)
 library(doBy)
 library(patchwork)
 
+
 #load in nutrient data
 nutrient<- read.csv("F:\\Research\\Peru_Nutrient.csv")
 
-theme<-theme(
-  plot.title = element_text(size = 16, hjust = 0.5),
-  axis.title.y = element_text(face="bold", size = 18), 
-  axis.text.y = element_text(size = 10),
-  axis.title.x = element_text(size = 18, face = "bold",color = "black"),
-  axis.text.x=element_text(size=10),
-  legend.position = "none", 
-  plot.margin = unit(c(0.1,0.1,0,0.1),"cm"))
+theme<-theme(plot.title = element_text(size = 16, hjust = 0.5),
+             axis.title.y = element_text(face="bold", size = 18), 
+             axis.text.x = element_text(size = 16),
+             axis.text.y = element_text(size = 16),
+             axis.title.x = element_text(size = 18, face = "bold",color = "black"),
+             plot.margin = unit(c(0.1,0.1,0,0.1),"cm") ,
+             strip.text = element_text(face = "bold", size = 16), 
+            legend.position = "none")
+
 
 
 ########## LIA----
@@ -268,7 +270,7 @@ both_c <- ggplot(nutrient, aes(x=Type, y=mol_C, color=Type, group=Type))+
   labs(
     x = NULL,
     y = "mols Carbon", 
-    title = "(a)") +
+    tag = "(a)") +
   facet_wrap(~soilAge, labeller = labeller(soilAge = c(
     "rgm" = "RGM", "lia" = "LIA"))) +
   geom_text(
@@ -277,7 +279,11 @@ both_c <- ggplot(nutrient, aes(x=Type, y=mol_C, color=Type, group=Type))+
     inherit.aes = FALSE,
     vjust = 1.2,
     size = 6) + 
-  theme
+  theme_bw() + 
+  theme +
+  theme(
+    plot.tag = element_text(face = "bold", size = 18),
+    plot.tag.position = c(0.02, 0.98)) 
 
 #mol_N
 RGM_N_mean<- data.frame(soilAge=c('rgm','rgm'), Type=c('control', 'latrine'), mol_N=c(21.37143, 1976.61429))
@@ -298,7 +304,7 @@ both_N <- nutrient[c(1:4,6:8,11:27),] %>%
   labs(
     x = NULL,
     y = "mols Nitrogen", 
-    title = "(b)") +
+    tag = "(b)") +
   facet_wrap(~soilAge, labeller = labeller(soilAge = c(
     "rgm" = "RGM", "lia" = "LIA")))+
   geom_text(
@@ -306,8 +312,11 @@ both_N <- nutrient[c(1:4,6:8,11:27),] %>%
     aes(x = 1.5, y = Inf, label = stars),
     inherit.aes = FALSE,
     vjust = 1.2,
-    size = 6) + 
-  theme
+    size = 6) + theme_bw() + 
+  theme +
+  theme(
+    plot.tag = element_text(face = "bold", size = 18),
+    plot.tag.position = c(0.02, 0.98)) 
 
 #CN ratio
 RGM_CN_mean<- data.frame(soilAge=c('rgm','rgm'), Type=c('control', 'latrine'), CN_Ratio=c(mean(wide_RGM$CN_Ratio_control), mean(wide_RGM$CN_Ratio_latrine)))
@@ -327,7 +336,7 @@ both_cn <- ggplot(nutrient, aes(x=Type, y=CN_Ratio, color=Type, group=Type))+
   labs(
     x = NULL,
     y = "C:N ratio", 
-    title = "(c)") +
+    tag = "(e)") +
   facet_wrap(~soilAge, labeller = labeller(soilAge = c(
     "rgm" = "RGM", "lia" = "LIA")))+
   geom_text(
@@ -335,8 +344,11 @@ both_cn <- ggplot(nutrient, aes(x=Type, y=CN_Ratio, color=Type, group=Type))+
     aes(x = 1.5, y = Inf, label = stars),
     inherit.aes = FALSE,
     vjust = 1.2,
-    size = 6) + 
-  theme
+    size = 6) + theme_bw() + 
+  theme +
+  theme(
+    plot.tag = element_text(face = "bold", size = 18),
+    plot.tag.position = c(0.02, 0.98)) 
 
 #d15N ratio
 RGM_d15N_mean<- data.frame(soilAge=c('rgm','rgm'), Type=c('control', 'latrine'), d15N=c(mean(wide_RGM$d15N_control), mean(wide_RGM$d15N_latrine)))
@@ -356,7 +368,7 @@ both_d15N <- ggplot(nutrient, aes(x=Type, y=d15N, color=Type, group=Type))+
   labs(
     x = NULL,
     y = "𝝳15N", 
-    title = "(d)") +
+    tag = "(d)") +
   facet_wrap(~soilAge, labeller = labeller(soilAge = c(
     "rgm" = "RGM", "lia" = "LIA")))+
   geom_text(
@@ -364,8 +376,11 @@ both_d15N <- ggplot(nutrient, aes(x=Type, y=d15N, color=Type, group=Type))+
     aes(x = 1.5, y = Inf, label = stars),
     inherit.aes = FALSE,
     vjust = 1.2,
-    size = 6) + 
-  theme
+    size = 6) + theme_bw() + 
+  theme +
+  theme(
+    plot.tag = element_text(face = "bold", size = 18),
+    plot.tag.position = c(0.02, 0.98)) 
 
 #d13C ratio
 RGM_d13C_mean<- data.frame(soilAge=c('rgm','rgm'), Type=c('control', 'latrine'), d13C=c(mean(wide_RGM$d13C_control), mean(wide_RGM$d13C_latrine)))
@@ -385,7 +400,7 @@ both_d13C <- ggplot(nutrient, aes(x=Type, y=d13C, color=Type, group=Type))+
   labs(
     x = NULL,
     y = "𝝳13C", 
-    title = "(e)") +
+    tag = "(c)") +
   facet_wrap(~soilAge, labeller = labeller(soilAge = c(
   "rgm" = "RGM", "lia" = "LIA")))+
   geom_text(
@@ -393,12 +408,20 @@ both_d13C <- ggplot(nutrient, aes(x=Type, y=d13C, color=Type, group=Type))+
     aes(x = 1.5, y = Inf, label = stars),
     inherit.aes = FALSE,
     vjust = 1.2,
-    size = 6) + 
-  theme
+    size = 6) + theme_bw() + 
+  theme +
+  theme(
+    plot.tag = element_text(face = "bold", size = 18),
+    plot.tag.position = c(0.02, 0.98)) 
 
 #plot all together 
-wrap_plots(both_c, both_N, both_cn, both_d13C, both_d15N, ncol = 2)
-nutrient_plots <- wrap_plots(both_c, both_N, both_cn, both_d13C, both_d15N, ncol = 2)
+nutrient_plots <- wrap_plots(both_c, both_N, both_d13C, both_d15N, both_cn, ncol = 2)
+nutrient_plots
+
+
+
+
+
 
 ############ latrines----
 #filter for just latrines
