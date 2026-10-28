@@ -56,6 +56,18 @@ emmeans(m_dna_veg, pairwise~type_ins)
 #make plots for each
 
 #plot for latrine distance
+
+#scatterplot
+ggplot(dna_lat, aes(x = as.numeric(as.character(distance)), y = DNA_amount, label = latrine)) +
+  geom_point(size = 0.5) +
+  scale_fill_manual(values = dist_cols, guide = "none") +
+  geom_line(aes(color = latrine), linewidth = 0.5) +
+  geom_text_repel(size = 2, fontface = "bold") +
+  labs(x = "Distance", y = "DNA amount") +
+  theme_bw()
+
+
+
 #make mean and s values
 #we have to make a wide data frame so it has mean and SE for each 
 dna_latSum<-dna_lat %>%
@@ -102,7 +114,7 @@ dna_dists <- ggplot(dna_lat, aes(x = dis_name, y = DNA_amount)) +
     fontface = "bold",
     color = c("#5B3A7A", "#1A8FA3")) +
   scale_fill_manual(values = dist_cols, guide = "none") +
-  labs(x = NULL, y = "DNA (µg/g)", tag = "(g)") +
+  labs(x = NULL, y = "DNA (µg/g)", tag = "(a)") +
   theme_bw() +
   theme +
   theme(plot.tag = element_text(face = "bold", size = 18),
@@ -149,7 +161,7 @@ dna_type <- dna_type <- ggplot(dna_data, aes(type_ins, DNA_amount)) +
   labs(
     x = NULL,
     y = "DNA (µg/g)",
-    tag = "(h)") +
+    tag = "(b)") +
   scale_fill_manual(
     values = c("#9C6EB0","#4ACD66","#4DD7CE"),
     guide = "none") +
@@ -167,6 +179,7 @@ dna_type <- dna_type <- ggplot(dna_data, aes(type_ins, DNA_amount)) +
     plot.tag.position = c(0.02, 0.98),
     legend.position = "none")
 dna_type
+#export 1800 x 800
 
 #put the two together for manuscript 
 dna_dec <- dna_dists + dna_type

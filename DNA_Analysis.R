@@ -192,7 +192,7 @@ dna_all$panel <- factor(
 dna_plot <- ggplot(dna_all, aes(treatment.x, DNA_ug_per_g)) +
   geom_boxplot(aes(fill = treatment.x), outliers = FALSE) +
   geom_point(aes(color = treatment.x), alpha = 0.5) +
-  labs(x = NULL, y = "DNA (µg/g)", tag = "(f)") +
+  labs(x = NULL, y = "DNA (µg/g)") +
   scale_fill_manual(
     values = c("cyan3", "#9C6EB0"),
     guide = "none") +
@@ -217,6 +217,10 @@ dna_plot <- ggplot(dna_all, aes(treatment.x, DNA_ug_per_g)) +
     plot.tag.position = c(0.02, 0.98)) 
 
 dna_plot
+
+#1200x600
+
+
 #combined with nutrient plots
 design <- c(
   area(t = 1, l = 1, b = 1, r = 1),  # both_c

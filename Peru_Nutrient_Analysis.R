@@ -6,7 +6,7 @@ library(patchwork)
 
 
 #load in nutrient data
-nutrient<- read.csv("F:\\Research\\Peru_Nutrient.csv")
+nutrient<- read.csv("Peru_Nutrient.csv")
 
 theme<-theme(plot.title = element_text(size = 16, hjust = 0.5),
              axis.title.y = element_text(face="bold", size = 18), 
