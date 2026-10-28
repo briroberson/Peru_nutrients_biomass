@@ -269,7 +269,7 @@ both_c <- ggplot(nutrient, aes(x=Type, y=mol_C, color=Type, group=Type))+
     "latrine" = "Latrine")) +
   labs(
     x = NULL,
-    y = "mols Carbon", 
+    y = "Carbon (µmol/g)", 
     tag = "(a)") +
   facet_wrap(~soilAge, labeller = labeller(soilAge = c(
     "rgm" = "RGM", "lia" = "LIA"))) +
@@ -283,7 +283,7 @@ both_c <- ggplot(nutrient, aes(x=Type, y=mol_C, color=Type, group=Type))+
   theme +
   theme(
     plot.tag = element_text(face = "bold", size = 18),
-    plot.tag.position = c(0.02, 0.98)) 
+    plot.tag.position = c(0.03, 0.98)) 
 
 #mol_N
 RGM_N_mean<- data.frame(soilAge=c('rgm','rgm'), Type=c('control', 'latrine'), mol_N=c(21.37143, 1976.61429))
@@ -303,7 +303,7 @@ both_N <- nutrient[c(1:4,6:8,11:27),] %>%
     "latrine" = "Latrine")) +
   labs(
     x = NULL,
-    y = "mols Nitrogen", 
+    y = "Nitrogen (µmol/g)", 
     tag = "(b)") +
   facet_wrap(~soilAge, labeller = labeller(soilAge = c(
     "rgm" = "RGM", "lia" = "LIA")))+
@@ -316,7 +316,7 @@ both_N <- nutrient[c(1:4,6:8,11:27),] %>%
   theme +
   theme(
     plot.tag = element_text(face = "bold", size = 18),
-    plot.tag.position = c(0.02, 0.98)) 
+    plot.tag.position = c(0.03, 0.98)) 
 
 #CN ratio
 RGM_CN_mean<- data.frame(soilAge=c('rgm','rgm'), Type=c('control', 'latrine'), CN_Ratio=c(mean(wide_RGM$CN_Ratio_control), mean(wide_RGM$CN_Ratio_latrine)))
@@ -348,7 +348,7 @@ both_cn <- ggplot(nutrient, aes(x=Type, y=CN_Ratio, color=Type, group=Type))+
   theme +
   theme(
     plot.tag = element_text(face = "bold", size = 18),
-    plot.tag.position = c(0.02, 0.98)) 
+    plot.tag.position = c(0.03, 0.98)) 
 
 #d15N ratio
 RGM_d15N_mean<- data.frame(soilAge=c('rgm','rgm'), Type=c('control', 'latrine'), d15N=c(mean(wide_RGM$d15N_control), mean(wide_RGM$d15N_latrine)))
@@ -380,7 +380,7 @@ both_d15N <- ggplot(nutrient, aes(x=Type, y=d15N, color=Type, group=Type))+
   theme +
   theme(
     plot.tag = element_text(face = "bold", size = 18),
-    plot.tag.position = c(0.02, 0.98)) 
+    plot.tag.position = c(0.03, 0.98)) 
 
 #d13C ratio
 RGM_d13C_mean<- data.frame(soilAge=c('rgm','rgm'), Type=c('control', 'latrine'), d13C=c(mean(wide_RGM$d13C_control), mean(wide_RGM$d13C_latrine)))
@@ -412,14 +412,24 @@ both_d13C <- ggplot(nutrient, aes(x=Type, y=d13C, color=Type, group=Type))+
   theme +
   theme(
     plot.tag = element_text(face = "bold", size = 18),
-    plot.tag.position = c(0.02, 0.98)) 
+    plot.tag.position = c(0.03, 0.98)) 
 
 #plot all together 
-nutrient_plots <- wrap_plots(both_c, both_N, both_d13C, both_d15N, both_cn, ncol = 2)
+nutrient_plots <- wrap_plots(both_c, both_N, both_d13C, both_d15N, both_cn, ncol = 5)
 nutrient_plots
 
+both_c + both_N + both_d13C + both_d15N + both_cn
 
+# nutrients only for manuscript: 
 
+c_and_n <- both_c + both_N 
+others <- both_d13C + both_d15N + both_cn
+nutrient_plots <- c_and_n / isotopes
+nutrient_plots
+# export 1600 x 1000
+
+#just c and n for graphical abstract - 800 x 1000
+both_c / both_N
 
 
 
